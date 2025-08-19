@@ -1,81 +1,98 @@
 # AiSYA SMART SKIN
 
-An AI-powered skin analysis and skincare recommendation system that helps users analyze their skin condition and receive personalized product recommendations.
+An AI-powered skin analysis web application that helps users analyze their skin condition and receive personalized skincare recommendations. This is a static web application that runs entirely in the browser.
 
 ## Features
 
-- **AI Skin Analysis**: Upload photos for automated skin condition analysis
-- **Personalized Recommendations**: Get tailored skincare product suggestions
-- **Product Database**: Comprehensive database of skincare products
-- **User Reviews**: Read and submit product reviews
-- **Skincare Routines**: Customized skincare routine recommendations
-- **Interactive Interface**: User-friendly web interface with modern design
+- **AI Skin Analysis**: Upload photos or use camera for automated skin condition analysis
+- **Personalized Recommendations**: Get tailored skincare suggestions based on analysis
+- **Real-time Camera Capture**: Use your device camera for instant skin analysis
+- **Responsive Design**: Works on desktop and mobile devices
+- **No Server Required**: Runs entirely in the browser using client-side JavaScript
 
 ## Technology Stack
 
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: PHP
-- **Database**: MySQL
-- **AI/ML**: Python with TensorFlow/Keras
-- **Image Processing**: Computer vision for skin analysis
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **AI/ML**: TensorFlow.js for client-side machine learning
+- **Image Processing**: Canvas API for image manipulation
+- **Camera Access**: WebRTC MediaDevices API
 
 ## Project Structure
 
 ```
-├── index.php              # Main homepage
-├── scan.php              # Skin scanning interface
-├── scan_results.php      # Analysis results display
-├── products.php          # Product catalog
-├── recommendation.php    # Recommendation engine
-├── review.php           # Product reviews
-├── analyze_skin.py      # Python skin analysis script
-├── skin_analyzer.py     # Core analysis algorithms
-├── models/              # AI model files
-├── images/              # Product images
-├── dataset/             # Training data
-├── uploads/             # User uploaded images
-└── config.php           # Database configuration
+├── index.html           # Main homepage
+├── scan.html           # Skin scanning interface
+├── images/             # UI and product images
+├── video/              # Demo videos
+├── uploads/            # User uploaded images (for demo)
+└── README.md           # Project documentation
 ```
+
+## Live Demo
+
+Visit the live application: [https://nadspace.github.io/ai-skin-analyzer/](https://nadspace.github.io/ai-skin-analyzer/)
 
 ## Setup Instructions
 
 ### Prerequisites
 
-- PHP 7.4 or higher
-- MySQL 5.7 or higher
-- Python 3.7+ with required packages
-- Web server (Apache/Nginx)
+- Modern web browser with JavaScript enabled
+- Camera access (optional, for real-time capture)
+- Internet connection (for TensorFlow.js CDN)
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/nadspace/aisya-smart-skin.git
-cd aisya-smart-skin
+git clone https://github.com/nadspace/ai-skin-analyzer.git
+cd ai-skin-analyzer
 ```
 
-2. Set up the database:
+2. Open `index.html` in your web browser, or serve it using a local server:
 ```bash
-mysql -u your_username -p < asya_smart_skin.sql
+# Using Python
+python -m http.server 8000
+
+# Using Node.js
+npx serve .
+
+# Using PHP
+php -S localhost:8000
 ```
 
-3. Configure database connection:
-   - Update `config.php` with your database credentials
-
-4. Install Python dependencies:
-```bash
-pip install tensorflow opencv-python numpy
-```
-
-5. Set up web server to serve the project directory
+3. Navigate to `http://localhost:8000` in your browser
 
 ## Usage
 
-1. Navigate to the application in your web browser
-2. Upload a photo of your skin for analysis
-3. View the AI-generated analysis results
-4. Browse recommended products based on your skin type
-5. Read reviews and create skincare routines
+1. Open the application in your web browser
+2. Click "Start Skin Analysis" or navigate to the scanner
+3. Upload a photo or use your camera to capture an image
+4. Click "Analyze Skin" to get AI-powered results
+5. View your skin type and personalized recommendations
+
+## Features in Detail
+
+### AI Skin Analysis
+- Uses TensorFlow.js for client-side machine learning
+- Analyzes uploaded images to determine skin type
+- Provides confidence scores and detailed analysis
+
+### Camera Integration
+- Real-time camera access using WebRTC
+- Capture photos directly in the browser
+- Works on both desktop and mobile devices
+
+### Responsive Design
+- Mobile-first responsive design
+- Touch-friendly interface
+- Optimized for various screen sizes
+
+## Browser Compatibility
+
+- Chrome 60+
+- Firefox 55+
+- Safari 11+
+- Edge 79+
 
 ## Contributing
 

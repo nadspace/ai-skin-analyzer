@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Scanner - AiSYA SMART SKIN</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #1976d2;
+            --primary-light: #64b5f6;
+            --secondary: #e3f2fd;
+            --text-dark: #333;
+            --text-light: #fff;
+            --border-radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--secondary);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            padding: 1.5rem 0;
+            color: var(--text-light);
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .scanner-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--primary);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            background-color: rgba(25, 118, 210, 0.05);
+        }
+        
+        .upload-area.dragover {
+            background-color: rgba(25, 118, 210, 0.1);
+            border-color: var(--primary-light);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .upload-text {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .upload-subtext {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .camera-section {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .camera-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+        
+        .camera-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        
+        .preview-container {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .analysis-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .analysis-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .skin-type {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .recommendations {
+            margin-top: 1.5rem;
+        }
+        
+        .recommendation-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--primary);
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+        
+        #video {
+            max-width: 100%;
+            border-radius: var(--border-radius);
+        }
+        
+        #canvas {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .scanner-container {
+                padding: 1rem;
+            }
+            
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">AiSYA SMART SKIN</div>
+        <p>AI-Powered Skin Analysis</p>
+    </header>
+
+    <div class="container">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+
+        <div class="scanner-container">
+            <h2>Upload Your Photo for Skin Analysis</h2>
+            
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">Click to upload or drag and drop</div>
+                <div class="upload-subtext">Supports JPG, PNG files</div>
+            </div>
+            
+            <input type="file" id="fileInput" accept="image/*">
+            
+            <div class="camera-section">
+                <button class="camera-btn" onclick="startCamera()">
+                    <i class="fas fa-camera"></i> Use Camera
+                </button>
+                <button class="camera-btn" onclick="capturePhoto()" id="captureBtn" style="display: none;">
+                    <i class="fas fa-camera-retro"></i> Capture Photo
+                </button>
+            </div>
+            
+            <video id="video" autoplay style="display: none;"></video>
+            <canvas id="canvas"></canvas>
+            
+            <div class="preview-container" id="previewContainer" style="display: none;">
+                <img id="previewImage" class="preview-image" alt="Preview">
+                <br><br>
+                <button class="camera-btn" onclick="analyzeImage()">
+                    <i class="fas fa-search"></i> Analyze Skin
+                </button>
+            </div>
+        </div>
+
+        <div class="analysis-container" id="analysisContainer">
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p>Analyzing your skin...</p>
+            </div>
+            
+            <div id="analysisResults" style="display: none;">
+                <h3 class="analysis-title">Skin Analysis Results</h3>
+                
+                <div class="skin-type">
+                    <h4>Your Skin Type: <span id="skinType">Normal</span></h4>
+                    <p id="skinDescription">Your skin appears to be well-balanced with good hydration levels.</p>
+                </div>
+                
+                <div class="recommendations">
+                    <h4>Personalized Recommendations:</h4>
+                    <div id="recommendationsList">
+                        <!-- Recommendations will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentImage = null;
+        let stream = null;
+
+        // File upload handling
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+        
+        // Drag and drop handling
+        const uploadArea = document.querySelector('.upload-area');
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('drop', handleDrop);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                displayImage(file);
+            }
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                displayImage(files[0]);
+            }
+        }
+
+        function handleDragLeave(event) {
+            uploadArea.classList.remove('dragover');
+        }
+
+        function displayImage(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewImage = document.getElementById('previewImage');
+                previewImage.src = e.target.result;
+                currentImage = e.target.result;
+                document.getElementById('previewContainer').style.display = 'block';
+                stopCamera();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(mediaStream) {
+                    stream = mediaStream;
+                    const video = document.getElementById('video');
+                    video.srcObject = mediaStream;
+                    video.style.display = 'block';
+                    document.getElementById('captureBtn').style.display = 'inline-block';
+                })
+                .catch(function(error) {
+                    alert('Error accessing camera: ' + error.message);
+                });
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+            
+            const dataURL = canvas.toDataURL('image/png');
+            const previewImage = document.getElementById('previewImage');
+            previewImage.src = dataURL;
+            currentImage = dataURL;
+            
+            document.getElementById('previewContainer').style.display = 'block';
+            stopCamera();
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                document.getElementById('video').style.display = 'none';
+                document.getElementById('captureBtn').style.display = 'none';
+            }
+        }
+
+        function analyzeImage() {
+            if (!currentImage) {
+                alert('Please select an image first');
+                return;
+            }
+
+            document.getElementById('analysisContainer').style.display = 'block';
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('analysisResults').style.display = 'none';
+
+            // Simulate AI analysis with random results
+            setTimeout(() => {
+                const skinTypes = [
+                    {
+                        type: 'Normal',
+                        description: 'Your skin appears to be well-balanced with good hydration levels and minimal concerns.',
+                        recommendations: [
+                            'Use a gentle cleanser twice daily',
+                            'Apply a lightweight moisturizer',
+                            'Don\'t forget daily SPF protection',
+                            'Consider a vitamin C serum for antioxidant benefits'
+                        ]
+                    },
+                    {
+                        type: 'Oily',
+                        description: 'Your skin shows signs of excess oil production, particularly in the T-zone area.',
+                        recommendations: [
+                            'Use a foaming or gel-based cleanser',
+                            'Apply oil-free, non-comedogenic moisturizer',
+                            'Consider salicylic acid products for pore care',
+                            'Use clay masks 1-2 times per week'
+                        ]
+                    },
+                    {
+                        type: 'Dry',
+                        description: 'Your skin appears to need more hydration and may benefit from richer moisturizing products.',
+                        recommendations: [
+                            'Use a cream-based cleanser',
+                            'Apply a rich, hydrating moisturizer',
+                            'Consider hyaluronic acid serums',
+                            'Use gentle, fragrance-free products'
+                        ]
+                    },
+                    {
+                        type: 'Combination',
+                        description: 'Your skin shows different characteristics in different areas, with an oily T-zone and drier cheeks.',
+                        recommendations: [
+                            'Use different products for different areas',
+                            'Gentle cleanser for the entire face',
+                            'Lightweight moisturizer on T-zone, richer on cheeks',
+                            'Targeted treatments for specific concerns'
+                        ]
+                    }
+                ];
+
+                const randomSkinType = skinTypes[Math.floor(Math.random() * skinTypes.length)];
+                
+                document.getElementById('skinType').textContent = randomSkinType.type;
+                document.getElementById('skinDescription').textContent = randomSkinType.description;
+                
+                const recommendationsList = document.getElementById('recommendationsList');
+                recommendationsList.innerHTML = '';
+                
+                randomSkinType.recommendations.forEach(rec => {
+                    const div = document.createElement('div');
+                    div.className = 'recommendation-item';
+                    div.innerHTML = `<i class="fas fa-check-circle" style="color: var(--primary); margin-right: 0.5rem;"></i>${rec}`;
+                    recommendationsList.appendChild(div);
+                });
+
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('analysisResults').style.display = 'block';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

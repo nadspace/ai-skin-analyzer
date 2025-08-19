@@ -47,3 +47,9 @@ sessions/
 
 # Configuration files with sensitive data (if any)
 # config.php
+
+# PHP files (converted to static HTML)
+*.php
+*.sql
+config.php
+asya_smart_skin.sql
