@@ -1,0 +1,47 @@
+# Debug logs
+debug.log
+*.log
+
+# User uploads
+uploads/
+!uploads/.gitkeep
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Large model files (optional - you might want to track these)
+# *.h5
+# models/
+
+# PHP session files
+sessions/
+
+# Configuration files with sensitive data (if any)
+# config.php
