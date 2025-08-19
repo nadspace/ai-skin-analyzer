@@ -36,9 +36,10 @@ Thumbs.db
 *.tmp
 *.temp
 
-# Large model files (optional - you might want to track these)
-# *.h5
-# models/
+# Large model files - using Git LFS
+*.h5
+models/
+dataset/
 
 # PHP session files
 sessions/
